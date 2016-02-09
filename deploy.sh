@@ -32,6 +32,7 @@ install_bahmni_installer(){
 copy_implementation_config(){
 	echo "Downloading the implementation config"
 	ansible-playbook playbooks/implementation-config.yml
+	cp -f inventory/"$1"/inventory /etc/bahmni-installer/
 }
 
 copy_db_dump(){
@@ -49,3 +50,4 @@ install_ansible
 copy_artifacts $1
 install_bahmni_installer
 copy_implementation_config $1
+deploy
