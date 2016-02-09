@@ -1,0 +1,14 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  sudo: yes
+  vars_files:
+    - ../group_vars/local
+
+
+  tasks:
+  - name: Download version {{ bahmni_installer }} of the installer
+    get_url: url={{ bahmni_installer_repo_url }}{{ bahmni_installer }}.noarch.rpm dest=/tmp/
+    
+#  - name: Install the installer
+#    yum: name="{{ bahmni_installer_repo_url }}{{ bahmni_installer }}.noarch.rpm" state=present
