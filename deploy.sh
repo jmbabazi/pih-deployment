@@ -27,10 +27,12 @@ install_bahmni_installer(){
 	rm -rf /etc/bahmni-installer
 	yum remove -y bahmni-installer
 	ansible-playbook playbooks/bahmni-installer.yml
-#	yum localinstall -y rpms/bahmni-installer-*.rpm
-#	mkdir -p /etc/bahmni-installer/deployment-artifacts
 }
 
+copy_implementation_config(){
+	echo "Downloading the implementation config"
+	ansible-playbook playbooks/implementation-config.yml
+}
 
 copy_db_dump(){
 	echo "Dropping the openmrs database"
@@ -46,3 +48,4 @@ echo $1
 install_ansible
 copy_artifacts $1
 install_bahmni_installer
+copy_implementation_config $1

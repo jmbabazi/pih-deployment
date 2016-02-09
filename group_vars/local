@@ -1,3 +1,6 @@
 bahmni_installer: bahmni-installer-0.78-866.noarch.rpm
-bahmni_endtb_repo_url: https://bahmni-repo.twhosted.com/endtb
+bahmni_implementation_repo_url: https://bahmni-repo.twhosted.com/endtb
 bahmni_installer_repo_url: https://bintray.com/artifact/download/bahmni/rpm/rpms/
+bahmni_deployment_artifacts: /etc/bahmni-installer/deployment-artifacts
+
+implementation_name: endtb  
