@@ -8,7 +8,7 @@
 
   tasks:
   - name: Download version {{ bahmni_installer }} of the installer
-    get_url: url={{ bahmni_installer_repo_url }}{{ bahmni_installer }}.noarch.rpm dest=/tmp/
+    get_url: url={{ bahmni_installer_repo_url }}{{ bahmni_installer }} dest=/tmp/
     
-#  - name: Install the installer
-#    yum: name="{{ bahmni_installer_repo_url }}{{ bahmni_installer }}.noarch.rpm" state=present
+  - name: Install the installer
+    yum: name="/tmp/{{ bahmni_installer }}" state=present

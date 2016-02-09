@@ -19,7 +19,8 @@ install_ansible(){
 copy_artifacts(){
 	echo "Copying the files from inventory/$1/"
 	mkdir -p group_vars
-	cp -f inventory/$1/local group_vars/	
+	mkdir -p rpms
+	cp -f inventory/"$1"/local group_vars/	
 }
 
 install_bahmni_installer(){
@@ -41,6 +42,7 @@ deploy(){
 	cd /etc/bahmni-installer && bahmni install inventory
 }
 
+echo $1
 install_ansible
-copy_artifacts
+copy_artifacts $1
 install_bahmni_installer
