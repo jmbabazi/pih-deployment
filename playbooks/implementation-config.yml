@@ -7,6 +7,9 @@
 
 
   tasks:
+  - name: copy mysql dump to /etc/bahmni-installer/deployment-artifacts    
+    get_url: url="{{ bahmni_implementation_repo_url }}/mysql_dump.sql" dest=/etc/bahmni-installer/deployment-artifacts
+
   - name: copy implementation config    
     get_url: url="{{ bahmni_implementation_repo_url }}/{{ implementation_name }}_config.zip" dest=/etc/bahmni-installer/deployment-artifacts
 
