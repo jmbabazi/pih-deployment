@@ -7,6 +7,14 @@
 
 
   tasks:
+  - name: install required packages
+    yum: pkg={{ item }} state=installed
+    with_items:
+        - unzip
+        - tar
+        - wget
+        - curl
+
   - name: copy mysql dump to /etc/bahmni-installer/deployment-artifacts    
     get_url: url="{{ bahmni_implementation_repo_url }}/mysql_dump.sql" dest=/etc/bahmni-installer/deployment-artifacts
 
