@@ -1,9 +1,11 @@
 #!/bin/bash
 
+bin_path="$PWD"
+
 install_ansible(){
 	if ! rpm -qa | grep -qw ansible;
 	then
-	    echo "install ansible"
+	    echo "installing ansible"
 	    cd /tmp
 		wget http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 		rpm -ivh epel-release-6-8.noarch.rpm
@@ -18,10 +20,10 @@ install_ansible(){
 
 copy_artifacts(){
 	echo "Copying the files from inventory/$1/"
-	pwd
+	cd "$bin_path"	
 	mkdir -p group_vars
 	mkdir -p rpms
-	cp -f inventory/"$1"/local group_vars/	
+	cp -f inventory/"$1"/local group_vars/	 	
 }
 
 install_bahmni_installer(){
