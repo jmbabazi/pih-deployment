@@ -6,9 +6,9 @@ Includes Ansible playbooks and system configurations for deploying different bah
 * vagrant ssh
 * sudo su -
 * cd /vagrant/
-* ./deploy.sh default 
-  
-* ./deploy.sh [implementation_name] (e.g. ./deploy.sh endtb)
+* ./deploy.sh implementation_name 
+- ./deploy.sh default 
+- ./deploy.sh endtb
 
 
 After the installation the OpenMRS and Bahmni apps would be accessible via the following URLs:
