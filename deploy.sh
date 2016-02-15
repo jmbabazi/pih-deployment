@@ -1,6 +1,7 @@
 #!/bin/bash
 
 bin_path="$PWD"
+implementation_name="$1"
 
 install_ansible(){
 	if ! rpm -qa | grep -qw ansible;
@@ -23,7 +24,7 @@ copy_artifacts(){
 	cd "$bin_path"	
 	mkdir -p group_vars
 	mkdir -p rpms
-	cp -f inventory/"$1"/local group_vars/	 	
+	cp -f inventory/"$1"/* group_vars/	 	
 }
 
 install_bahmni_installer(){
@@ -34,8 +35,7 @@ install_bahmni_installer(){
 
 copy_implementation_config(){
 	echo "Downloading the implementation config"
-	ansible-playbook playbooks/implementation-config.yml
-	cp -f inventory/"$1"/inventory /etc/bahmni-installer/
+	ansible-playbook playbooks/implementation-config.yml	
 }
 
 copy_db_dump(){
@@ -45,6 +45,7 @@ copy_db_dump(){
 }
 
 deploy(){
+	cp -f group_vars/inventory /etc/bahmni-installer/
 	cd /etc/bahmni-installer && bahmni install inventory
 }
 
@@ -52,5 +53,8 @@ echo $1
 install_ansible
 copy_artifacts $1
 install_bahmni_installer
-copy_implementation_config $1
+if [[ "$implementation_name" != "default" ]];
+then
+	copy_implementation_config $1
+fi
 deploy
