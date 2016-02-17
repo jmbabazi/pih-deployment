@@ -2,7 +2,7 @@
 
 bin_path="$PWD"
 implementation_name="$1"
-
+env_type="$2"
 
 install_ansible(){
 	if ! rpm -qa | grep -qw ansible;
@@ -50,6 +50,10 @@ deploy(){
 	cd /etc/bahmni-installer && bahmni install inventory
 }
 
+install_crashplan(){
+	echo "Installing install_crashplan"
+}
+
 for i in "$@"
 do
   echo Argument: $i
@@ -63,3 +67,8 @@ then
 	copy_implementation_config $implementation_name
 fi
 deploy
+if [[ "$env_type" == "prod" ]];
+then
+	install_crashplan
+fi
+
