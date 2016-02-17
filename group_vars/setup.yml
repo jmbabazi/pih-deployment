@@ -1,0 +1,13 @@
+implementation_name: endtb  
+omods: ['bacteriology-1.0-SNAPSHOT.omod'] 
+bahmni_ntp_timezone: America/New_York
+bahmni_repo_url: https://bahmni-repo.twhosted.com/rpm/bahmni
+mysql_root_password: password
+openmrs_db_password: password
+openmrs_server_options: "-Xms1024m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=1024m"
+
+bahmni_installer: bahmni-installer-0.78-866.noarch.rpm
+bahmni_implementation_repo_url: https://bahmni-repo.twhosted.com/endtb
+bahmni_installer_repo_url: https://bintray.com/artifact/download/bahmni/rpm/rpms/
+bahmni_installer_directory: /etc/bahmni-installer
+bahmni_deployment_artifacts: /etc/bahmni-installer/deployment-artifacts

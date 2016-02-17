@@ -3,6 +3,7 @@
 bin_path="$PWD"
 implementation_name="$1"
 
+
 install_ansible(){
 	if ! rpm -qa | grep -qw ansible;
 	then
@@ -24,7 +25,7 @@ copy_artifacts(){
 	cd "$bin_path"	
 	mkdir -p group_vars
 	mkdir -p rpms
-	cp -f inventory/"$1"/* group_vars/	 	
+	cp -f inventory/"$implementation_name"/* group_vars/	 	
 }
 
 install_bahmni_installer(){
@@ -41,20 +42,24 @@ copy_implementation_config(){
 copy_db_dump(){
 	echo "Dropping the openmrs database"
 	ansible bahmni-emr-db -i /etc/bahmni-installer/inventory -m shell -a "mysql -uroot -ppassword openmrs -e 'drop database openmrs'"
-	wget --no-check-certificate $1 -O /etc/bahmni-installer/deployment-artifacts/mysql_dump.sql
+	wget --no-check-certificate $implementation_name -O /etc/bahmni-installer/deployment-artifacts/mysql_dump.sql
 }
 
 deploy(){
-	cp -f group_vars/inventory /etc/bahmni-installer/
+	cp -f group_vars/* /etc/bahmni-installer/	
 	cd /etc/bahmni-installer && bahmni install inventory
 }
 
-echo $1
+for i in "$@"
+do
+  echo Argument: $i
+done
+
 install_ansible
-copy_artifacts $1
+copy_artifacts $implementation_name
 install_bahmni_installer
 if [[ "$implementation_name" != "default" ]];
 then
-	copy_implementation_config $1
+	copy_implementation_config $implementation_name
 fi
 deploy
