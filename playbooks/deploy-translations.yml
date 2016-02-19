@@ -1,0 +1,21 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  sudo: yes
+  vars_files:
+    - ../group_vars/translations.yml
+
+
+  tasks:
+  - name: install required packages
+    yum: pkg={{ item }} state=installed
+    with_items:
+        - git
+
+  - name: get the latest translations files from github repo
+    git: repo="{{ translations_repo_url }}" dest="/tmp/{{ translations_repo_name }}" update=yes force=yes
+
+  - name: copy translations files to bahmni_config folder
+    copy: src=/tmp/{{ translations_repo_name }}/openmrs/i18n/ dest=/var/www/bahmni_config/openmrs/i18n/ force=yes owner=bahmni group=bahmni mode=775
+
+
