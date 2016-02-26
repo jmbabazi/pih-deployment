@@ -1,0 +1,18 @@
+---
+- hosts: 127.0.0.1
+  sudo: yes
+  vars_files:
+    - ../group_vars/local
+
+  vars_prompt:
+  - name: "scp_username"
+    prompt: "enter username"
+    private: no
+
+  - name: "scp_url"
+    prompt: "enter scp url"
+    private: no
+
+  tasks:
+   - name: Enter ssh password
+     shell: scp -r {{scp_username}}@{{scp_url}}:{{production_folder}} /tmp
