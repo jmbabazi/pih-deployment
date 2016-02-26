@@ -11,3 +11,5 @@ bahmni_implementation_repo_url: https://bahmni-repo.twhosted.com/endtb
 bahmni_installer_repo_url: https://bintray.com/artifact/download/bahmni/rpm/rpms/
 bahmni_installer_directory: /etc/bahmni-installer
 bahmni_deployment_artifacts: /etc/bahmni-installer/deployment-artifacts
+
+production_folder: /home/jmbabazi
