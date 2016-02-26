@@ -2,7 +2,7 @@
 - hosts: 127.0.0.1
   sudo: yes
   vars_files:
-    - ../group_vars/local
+    - ../inventory/endtb/setup.yml
 
   vars_prompt:
   - name: "scp_username"
