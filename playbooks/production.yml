@@ -15,4 +15,4 @@
 
   tasks:
    - name: Enter ssh password
-     shell: scp -r {{scp_username}}@{{scp_url}}:{{production_folder}} /tmp
+     shell: scp -r {{scp_username}}@{{scp_url}}:{{production_folder}} .
