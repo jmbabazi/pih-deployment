@@ -3,7 +3,7 @@
   sudo: yes
   
   vars_files:
-      - ../../../group_vars/production
+      - ../../group_vars/production
   tasks:
   - name: Creating groups
     group: name="{{item}}"
