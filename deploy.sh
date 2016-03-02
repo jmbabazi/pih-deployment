@@ -39,12 +39,6 @@ copy_implementation_config(){
 	ansible-playbook playbooks/implementation-config.yml	
 }
 
-copy_db_dump(){
-	echo "Dropping the openmrs database"
-	ansible bahmni-emr-db -i /etc/bahmni-installer/inventory -m shell -a "mysql -uroot -ppassword openmrs -e 'drop database openmrs'"
-	wget --no-check-certificate $implementation_name -O /etc/bahmni-installer/deployment-artifacts/mysql_dump.sql
-}
-
 deploy(){
 	cp -f group_vars/* /etc/bahmni-installer/	
 	cd /etc/bahmni-installer && bahmni install inventory
