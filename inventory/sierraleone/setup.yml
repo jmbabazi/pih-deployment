@@ -1,4 +1,4 @@
-implementation_name: default  
+implementation_name: sierraleone
 
 bahmni_ntp_timezone: America/New_York
 bahmni_repo_url: https://bahmni-repo.twhosted.com/rpm/bahmni

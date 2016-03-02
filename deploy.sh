@@ -1,8 +1,10 @@
 #!/bin/bash
 
-bin_path="$PWD"
-implementation_name="$1"
-env_type="$2"
+BIN_PATH="$PWD"
+IMPLEMENTATION_NAME="$1"
+ENV_TYPE="$2"
+
+# TODO: Validate input arguments and/or prompt the user to enter them interactively
 
 install_ansible(){
 	if ! rpm -qa | grep -qw ansible;
@@ -12,7 +14,6 @@ install_ansible(){
 		wget http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 		rpm -ivh epel-release-6-8.noarch.rpm
 		yum repolist
-		# yum -y update
 		yum -y install ansible
 		echo "ansible has been installed"
 	else
@@ -22,10 +23,10 @@ install_ansible(){
 
 copy_artifacts(){
 	echo "Copying the files from inventory/$1/"
-	cd "$bin_path"	
+	cd "$BIN_PATH"
 	mkdir -p group_vars
 	mkdir -p rpms
-	cp -f inventory/"$implementation_name"/* group_vars/	 	
+	cp -f inventory/"$IMPLEMENTATION_NAME"/* group_vars/
 }
 
 install_bahmni_installer(){
@@ -36,7 +37,7 @@ install_bahmni_installer(){
 
 copy_implementation_config(){
 	echo "Downloading the implementation config"
-	ansible-playbook playbooks/implementation-config.yml	
+	ansible-playbook playbooks/implementation-config.yml
 }
 
 deploy(){
@@ -48,21 +49,17 @@ install_crashplan(){
 	echo "Installing install_crashplan"
 }
 
-for i in "$@"
-do
-  echo Argument: $i
-done
+install_conditional_packages(){
+	if [[ "$ENV_TYPE" == "prod" ]];
+	then
+		install_crashplan
+	fi
+}
 
+echo "Deploying a new $ENV_TYPE environment for $IMPLEMENTATION_NAME"
 install_ansible
-copy_artifacts $implementation_name
+install_conditional_packages
+copy_artifacts
 install_bahmni_installer
-if [[ "$implementation_name" != "default" ]];
-then
-	copy_implementation_config $implementation_name
-fi
+copy_implementation_config
 deploy
-if [[ "$env_type" == "prod" ]];
-then
-	install_crashplan
-fi
-

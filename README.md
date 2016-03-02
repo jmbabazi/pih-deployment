@@ -7,7 +7,7 @@ Includes Ansible playbooks and system configurations for deploying different bah
 * sudo su -
 * cd /vagrant/
 * ./deploy.sh implementation_name 
-- ./deploy.sh default 
+- ./deploy.sh sierraleone 
 - ./deploy.sh endtb
 
 After the installation the OpenMRS and Bahmni apps would be accessible via the following URLs:
