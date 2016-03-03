@@ -17,6 +17,7 @@ install_ansible(){
 		yum repolist
 		yum -y install ansible
 		echo "ansible has been installed"
+		cd "$bin_path"
 	else
 	    echo "ansible is already installed"
 	fi
@@ -30,13 +31,13 @@ install_bahmni_installer(){
 
 pre_install_config(){
 	echo "Downloading the implementation config"
-	ansible-playbook playbooks/implementation-config.yml --extra-vars "implementation_name=$IMPLEMENTATION_NAME"  --tags "pre-install $ENV_TYPE"
+	ansible-playbook playbooks/implementation-config.yml --extra-vars "implementation_name=$IMPLEMENTATION_NAME"  --tags "pre-install"
 }
 
 post_install_config(){
 	echo "Downloading the implementation config"
 	bahmni stop
-	ansible-playbook playbooks/implementation-config.yml --extra-vars "implementation_name=$IMPLEMENTATION_NAME"  --tags "post-install $ENV_TYPE"
+	ansible-playbook playbooks/implementation-config.yml --extra-vars "implementation_name=$IMPLEMENTATION_NAME"  --tags "post-install"
 	bahmni start
 }
 
