@@ -2,7 +2,8 @@
 
 BIN_PATH="$PWD"
 IMPLEMENTATION_NAME="$1"
-ENV_TYPE="$2"
+default_environment="test"
+ENV_TYPE=${2:$default_environment}
 
 # TODO: Validate input arguments and/or prompt the user to enter them interactively
 
@@ -21,14 +22,6 @@ install_ansible(){
 	fi
 }
 
-copy_artifacts(){
-	echo "Copying the files from inventory/$1/"
-	cd "$BIN_PATH"
-	mkdir -p group_vars
-	mkdir -p rpms
-	cp -f inventory/"$IMPLEMENTATION_NAME"/* group_vars/
-}
-
 install_bahmni_installer(){
 	rm -rf /etc/bahmni-installer
 	yum remove -y bahmni-installer
@@ -37,7 +30,7 @@ install_bahmni_installer(){
 
 copy_implementation_config(){
 	echo "Downloading the implementation config"
-	ansible-playbook playbooks/implementation-config.yml
+	ansible-playbook playbooks/implementation-config.yml --extra-vars "implementation_name=$IMPLEMENTATION_NAME"
 }
 
 deploy(){
@@ -49,17 +42,13 @@ install_crashplan(){
 	echo "Installing install_crashplan"
 }
 
-install_conditional_packages(){
-	if [[ "$ENV_TYPE" == "prod" ]];
-	then
-		install_crashplan
-	fi
+install_conditional_packages(){	
+	ansible-playbook playbooks/$ENV_TYPE.yml --extra-vars "env_name=$ENV_TYPE"
 }
 
 echo "Deploying a new $ENV_TYPE environment for $IMPLEMENTATION_NAME"
 install_ansible
 install_conditional_packages
-copy_artifacts
 install_bahmni_installer
 copy_implementation_config
 deploy

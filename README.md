@@ -12,4 +12,4 @@ Includes Ansible playbooks and system configurations for deploying different bah
 
 After the installation the OpenMRS and Bahmni apps would be accessible via the following URLs:
 * http://192.168.33.21:8080/openmrs
-* https://192.168.33.21/bahmni/home/#/dashboard
+* https://192.168.33.21/home

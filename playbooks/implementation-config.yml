@@ -4,6 +4,7 @@
   sudo: yes
   vars_files:
     - ../group_vars/setup.yml
+    - ../group_vars/{{ implementation_name }}.yml
 
 
   tasks:
@@ -16,6 +17,8 @@
         - curl
         - git
 
+  - debug: msg="implementation_name = {{ implementation_name }}"
+      
   - name: copy mysql dump from custom url to /etc/bahmni-installer/deployment-artifacts
     get_url: url="{{ initial_database_url }}" dest=/etc/bahmni-installer/deployment-artifacts/mysql_dump.sql
     when: initial_database_url is defined
