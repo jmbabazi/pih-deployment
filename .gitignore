@@ -1,5 +1,4 @@
 .vagrant/
-.group_vars
 group_vars/
 .idea
 .iml
