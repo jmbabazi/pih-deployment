@@ -17,7 +17,7 @@ install_ansible(){
 		yum repolist
 		yum -y install ansible
 		echo "ansible has been installed"
-		cd "$bin_path"
+		cd "$BIN_PATH"
 	else
 	    echo "ansible is already installed"
 	fi
