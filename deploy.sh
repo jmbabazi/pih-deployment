@@ -28,18 +28,21 @@ install_bahmni_installer(){
 	ansible-playbook playbooks/bahmni-installer.yml
 }
 
-copy_implementation_config(){
+pre_install_config(){
 	echo "Downloading the implementation config"
-	ansible-playbook playbooks/implementation-config.yml --extra-vars "implementation_name=$IMPLEMENTATION_NAME"
+	ansible-playbook playbooks/implementation-config.yml --extra-vars "implementation_name=$IMPLEMENTATION_NAME"  --tags "pre-install $ENV_TYPE"
+}
+
+post_install_config(){
+	echo "Downloading the implementation config"
+	bahmni stop
+	ansible-playbook playbooks/implementation-config.yml --extra-vars "implementation_name=$IMPLEMENTATION_NAME"  --tags "post-install $ENV_TYPE"
+	bahmni start
 }
 
 deploy(){
 	cp -f group_vars/* /etc/bahmni-installer/	
 	cd /etc/bahmni-installer && bahmni install inventory
-}
-
-install_crashplan(){
-	echo "Installing install_crashplan"
 }
 
 install_conditional_packages(){	
@@ -48,7 +51,7 @@ install_conditional_packages(){
 
 echo "Deploying a new $ENV_TYPE environment for $IMPLEMENTATION_NAME"
 install_ansible
-install_conditional_packages
 install_bahmni_installer
-copy_implementation_config
+pre_install_config
 deploy
+post_install_config

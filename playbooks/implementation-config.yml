@@ -16,29 +16,40 @@
         - wget
         - curl
         - git
+    tags: [pre-install]
 
-  - debug: msg="implementation_name = {{ implementation_name }}"
+  - debug: msg="Pre-installation of {{ implementation_name }}"
+    tags: [pre-install]
       
   - name: copy mysql dump from custom url to /etc/bahmni-installer/deployment-artifacts
     get_url: url="{{ initial_database_url }}" dest=/etc/bahmni-installer/deployment-artifacts/mysql_dump.sql
     when: initial_database_url is defined
+    tags: [pre-install]
 
   - name: copy mysql dump from conventional url to /etc/bahmni-installer/deployment-artifacts
     get_url: url="{{ bahmni_implementation_repo_url }}/mysql_dump.sql" dest=/etc/bahmni-installer/deployment-artifacts/mysql_dump.sql
     when: initial_database_url is undefined
+    tags: [pre-install]
 
   - name: clone implementation config from github
     git: repo={{ implementation_config_repository }} version={{ implementation_config_repository_version }} dest={{ bahmni_deployment_artifacts }}/{{ implementation_name }}_config
     when: implementation_config_repository is defined
+    tags: [pre-install]
 
   - name: copy implementation config from conventional url
     get_url: url="{{ bahmni_implementation_repo_url }}/{{ implementation_name }}_config.zip" dest=/etc/bahmni-installer/deployment-artifacts
     when: implementation_config_repository is undefined
+    tags: [pre-install]
 
   - name: Create implementation directory
     file: path={{ bahmni_deployment_artifacts }}/{{ implementation_name }}_config state=directory
     when: implementation_config_repository is undefined
+    tags: [pre-install]
 
   - name: Extract implementation config    
     unarchive: src={{ bahmni_deployment_artifacts }}/{{ implementation_name }}_config.zip dest={{ bahmni_deployment_artifacts }}/{{ implementation_name }}_config copy=no
     when: implementation_config_repository is undefined
+    tags: [pre-install]
+
+  - debug: msg="Post-installation of {{ implementation_name }}"
+    tags: [post-install]
