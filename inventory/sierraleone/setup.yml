@@ -11,3 +11,7 @@ bahmni_implementation_repo_url:
 bahmni_installer_repo_url: https://bintray.com/artifact/download/bahmni/rpm/rpms/
 bahmni_installer_directory: /etc/bahmni-installer
 bahmni_deployment_artifacts: /etc/bahmni-installer/deployment-artifacts
+
+initial_database_url: https://raw.githubusercontent.com/Bahmni/bahmni-package/master/openmrs/resources/openmrs_clean_dump.sql
+implementation_config_repository: https://github.com/PIH/wellbody-config.git
+implementation_config_repository_version: master
