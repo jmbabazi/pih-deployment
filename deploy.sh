@@ -36,6 +36,7 @@ pre_install_config(){
 
 post_install_config(){
 	echo "Downloading the implementation config"
+	cd "$BIN_PATH"
 	bahmni stop
 	ansible-playbook playbooks/implementation-config.yml --extra-vars "implementation_name=$IMPLEMENTATION_NAME"  --tags "post-install"
 	bahmni start
