@@ -3,8 +3,7 @@
   connection: local
   sudo: yes
   vars_files:
-    - ../group_vars/setup.yml
-    - ../group_vars/{{ implementation_name }}.yml
+    - ../group_vars/{{ implementation_name }}-config.yml
 
 
   tasks:

@@ -1,6 +1,0 @@
-implementation_name: endtb  
-omods: ['bacteriology-1.0-SNAPSHOT.omod'] 
-
-bahmni_implementation_repo_url: https://bahmni-repo.twhosted.com/endtb/release-1.0
-
-production_folder: /home/jmbabazi/deploy-production

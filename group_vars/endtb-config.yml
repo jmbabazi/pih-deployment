@@ -1,9 +1,9 @@
 # required by Bahmni installer
 
-implementation_name: default
+implementation_name: endtb
 bahmni_ntp_timezone: America/New_York
 
-bahmni_repo_url: https://bahmni-repo.twhosted.com/rpm/bahmni
+bahmni_repo_url: https://bahmni-repo.twhosted.com/rpm/bahmni/
 bahmni_installer: bahmni-installer-0.80-139.noarch.rpm
 bahmni_installer_directory: /etc/bahmni-installer
 bahmni_deployment_artifacts: /etc/bahmni-installer/deployment-artifacts
@@ -11,3 +11,10 @@ bahmni_deployment_artifacts: /etc/bahmni-installer/deployment-artifacts
 mysql_root_password: password
 openmrs_db_password: password
 openmrs_server_options: "-Xms1024m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=1024m"
+
+omods: ['bacteriology-1.0-SNAPSHOT.omod']
+
+# used by pih-deployment
+
+bahmni_implementation_repo_url: https://bahmni-repo.twhosted.com/endtb/release-1.0
+production_folder: /home/jmbabazi/deploy-production

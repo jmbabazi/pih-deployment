@@ -3,12 +3,12 @@
   connection: local
   sudo: yes
   vars_files:
-    - ../group_vars/setup.yml
+    - ../group_vars/{{ implementation_name }}-config.yml
 
 
   tasks:
   - name: Download version {{ bahmni_installer }} of the installer
-    get_url: url={{ bahmni_installer_repo_url }}{{ bahmni_installer }} dest=/tmp/
+    get_url: url={{ bahmni_repo_url }}{{ bahmni_installer }} dest=/tmp/
     
   - name: Install the installer
     yum: name="/tmp/{{ bahmni_installer }}" state=present

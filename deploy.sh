@@ -2,8 +2,7 @@
 
 BIN_PATH="$PWD"
 IMPLEMENTATION_NAME="$1"
-default_environment="test"
-ENV_TYPE=${2:$default_environment}
+ENV_TYPE=${2:test}
 
 # TODO: Validate input arguments and/or prompt the user to enter them interactively
 
@@ -26,7 +25,7 @@ install_ansible(){
 install_bahmni_installer(){
 	rm -rf /etc/bahmni-installer
 	yum remove -y bahmni-installer
-	ansible-playbook playbooks/bahmni-installer.yml
+	ansible-playbook playbooks/bahmni-installer.yml --extra-vars "implementation_name=$IMPLEMENTATION_NAME"
 }
 
 pre_install_config(){
@@ -36,15 +35,16 @@ pre_install_config(){
 
 post_install_config(){
 	echo "Downloading the implementation config"
-	cd "$BIN_PATH"
 	bahmni stop
 	ansible-playbook playbooks/implementation-config.yml --extra-vars "implementation_name=$IMPLEMENTATION_NAME"  --tags "post-install"
 	bahmni start
 }
 
 deploy(){
-	cp -f group_vars/* /etc/bahmni-installer/	
+	cp -f $BIN_PATH/group_vars/$IMPLEMENTATION_NAME-config.yml /etc/bahmni-installer/setup.yml
+	cp -f $BIN_PATH/group_vars/$IMPLEMENTATION_NAME-inventory /etc/bahmni-installer/inventory
 	cd /etc/bahmni-installer && bahmni install inventory
+	cd "$BIN_PATH"
 }
 
 install_conditional_packages(){	
