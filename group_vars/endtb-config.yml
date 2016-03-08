@@ -16,5 +16,7 @@ omods: ['bacteriology-1.0-SNAPSHOT.omod']
 
 # used by pih-deployment
 
-bahmni_implementation_repo_url: https://bahmni-repo.twhosted.com/endtb/release-1.0
+initial_database_url: https://bahmni-repo.twhosted.com/endtb/release-1.0/mysql_dump.sql
+implementation_config_zip_url: https://bahmni-repo.twhosted.com/endtb/release-1.0/endtb_config.zip
+
 production_folder: /home/jmbabazi/deploy-production
