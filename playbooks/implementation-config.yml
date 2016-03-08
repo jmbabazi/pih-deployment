@@ -59,7 +59,7 @@
   - name: Copy implementation config
     copy: src={{ implementation_config_dir }} dest={{ bahmni_deployment_artifacts }}/{{ implementation_name }}_config mode=755 owner=bahmni group=bahmni
     when: implementation_config_dir is defined
-    tags: [pre-install]
+    tags: [pre-install,update-config]
 
     # POST-INSTALLATION ACTIVITIES
 
