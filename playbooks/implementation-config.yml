@@ -44,16 +44,11 @@
     when: implementation_config_zip_url is defined
     tags: [pre-install]
 
-  - name: Create implementation directory
-    file: path={{ bahmni_deployment_artifacts }}/{{ implementation_name }}_config state=directory
+  - name: Extract implementation config
+    unarchive: src={{ bahmni_deployment_artifacts }}/{{ implementation_name }}_config.zip dest={{ bahmni_deployment_artifacts }} copy=no
     when: implementation_config_zip_url is defined
     tags: [pre-install]
-
-  - name: Extract implementation config    
-    unarchive: src={{ bahmni_deployment_artifacts }}/{{ implementation_name }}_config.zip dest={{ bahmni_deployment_artifacts }}/{{ implementation_name }}_config copy=no
-    when: implementation_config_zip_url is defined
-    tags: [pre-install]
-
+    
     # Option 3:  When developing, it is useful to be able to copy the implementation config from another folder
 
   - name: Copy implementation config
