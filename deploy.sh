@@ -17,7 +17,7 @@ validateSetup() {
 	fi
 
 	# Ensure script is installed into $INSTALL_DIRECTORY/deployment
-	if [[ $SCRIPT_DIR <> "$INSTALL_DIRECTORY/deployment" ]]; then
+	if [[ $SCRIPT_DIR != "$INSTALL_DIRECTORY/deployment" ]]; then
 		echo "Expected this script to be located in $INSTALL_DIRECTORY/deployment.  Please check setup instructions." 1>&2
 		exit 1
 	fi
@@ -34,18 +34,15 @@ installDependentPackages() {
 collectEnvironmentSettings() {
 	# Read in the implementation name
 	read -e -p "Specify implementation name to install (endtb, sierraleone): "  -i "" IMPLEMENTATION_NAME
-	while [ "$IMPLEMENTATION_NAME" != "endtb" ] && [ "$IMPLEMENTATION_NAME" != "sierraleone" ]; do
-		read -e -p "Please specify either 'endtb' or 'sierraleone':  " IMPLEMENTATION_NAME
+	while ! [ -f "$SCRIPT_DIR/config/implementation/$IMPLEMENTATION_NAME.sh" ]; do
+		read -e -p "Invalid implementation specified.  Please choose based on options in $SCRIPT_DIR/config/implementation:  " IMPLEMENTATION_NAME
 	done
 
 	# Read in the environment type
-	read -e -p "Specify environment type to install (production, test): "  -i "" ENVIRONMENT_NAME
-	while [ "$ENVIRONMENT_NAME" != "production" ] && [ "$ENVIRONMENT_NAME" != "test" ]; do
-		read -e -p "Please specify either 'production' or 'test':  " ENVIRONMENT_NAME
+	read -e -p "Specify environment type to install (production, test, dev): "  -i "" ENVIRONMENT_NAME
+	while ! [ -f "$SCRIPT_DIR/config/environment/$ENVIRONMENT_NAME.sh" ]; do
+		read -e -p "Invalid environment specified.  Please choose based on options in $SCRIPT_DIR/config/environment:  " ENVIRONMENT_NAME
 	done
-
-	# Read in development source directory
-	read -e -p "If you are developing, specify the location of your Bahmni configuration source: "  -i "/vagrant/openmrs" SOURCE_DIRECTORY
 
 	# Write the input configuration settings to file for later reference
 	echo "Storing configuration settings in $CONFIG_FILE"
@@ -53,7 +50,6 @@ collectEnvironmentSettings() {
 	touch $CONFIG_FILE
 	echo "export IMPLEMENTATION_NAME=$IMPLEMENTATION_NAME" >> $CONFIG_FILE
 	echo "export ENVIRONMENT_NAME=$ENVIRONMENT_NAME" >> $CONFIG_FILE
-	echo "export SOURCE_DIRECTORY=$SOURCE_DIRECTORY" >> $CONFIG_FILE
 }
 
 loadEnvironmentVariables() {
@@ -78,8 +74,8 @@ outputToSetupYaml() {
 }
 
 outputIfSetToSetupYaml() {
-	local VAR_NAME = $1
-	local VAR_VALUE = $2
+	VAR_NAME="$1"
+	VAR_VALUE="$2"
 	if ! [ -z "$VAR_VALUE" ]; then
 		echo "$VAR_NAME: $VAR_VALUE" >> "$SETUP_YAML_FILE"
 	fi
@@ -117,7 +113,8 @@ updateBahmniConfiguration() {
 }
 
 installStarterDatabase() {
-	wget $INITIAL_DATABASE_URL -P $BAHMNI_DEPLOYMENT_ARTIFACTS/mysql_dump.sql
+	echo "Installing started database from URL: $INITIAL_DATABASE_URL"
+	wget $INITIAL_DATABASE_URL -P $BAHMNI_DEPLOYMENT_ARTIFACTS -O mysql_dump.sql
 }
 
 installImplementationConfig() {
@@ -149,6 +146,7 @@ installImplementationConfig() {
 deployBahmni() {
 	echo "Deploying latest distribution"
 	cd $INSTALL_DIRECTORY/deployment
+	loadEnvironmentVariables
 	installBahmniInstaller
 	updateBahmniConfiguration
 	installStarterDatabase
@@ -162,8 +160,8 @@ install() {
 		echo "Distribution already installed"
 		exit 1;
 	fi
-	installDependentPackages
 	collectEnvironmentSettings
+	installDependentPackages
 	deployBahmni
 }
 
@@ -176,10 +174,10 @@ updateDistribution() {
 
 updateConfig() {
 	# This emulates the code behind the "bahmni update-config" command, which seems to run too slow to use regularly
-	if [ -d "$SOURCE_DIRECTORY" ]; then
-		echo "Copying configuration from $SOURCE_DIRECTORY to $BAHMNI_OPENMRS_CONFIG_DIR"
+	if [ -d "$IMPLEMENTATION_CONFIG_DIR" ]; then
+		echo "Copying configuration from $IMPLEMENTATION_CONFIG_DIR/openmrs to $BAHMNI_OPENMRS_CONFIG_DIR"
 		rm -fR $BAHMNI_OPENMRS_CONFIG_DIR
-		cp -rf $SOURCE_DIRECTORY $BAHMNI_OPENMRS_CONFIG_DIR
+		cp -rf $IMPLEMENTATION_CONFIG_DIR/openmrs $BAHMNI_OPENMRS_CONFIG_DIR
 		chmod -R 755 $BAHMNI_OPENMRS_CONFIG_DIR
 		chown -R bahmni: $BAHMNI_OPENMRS_CONFIG_DIR
 		ln -sf $BAHMNI_OPENMRS_CONFIG_DIR/obscalculator /opt/openmrs/obscalculator
