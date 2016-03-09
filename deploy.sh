@@ -64,7 +64,7 @@ installBahmniInstaller() {
 	local BAHMNI_RPM="bahmni-installer-$BAHMNI_VERSION.noarch.rpm"
 	rm -rf /etc/bahmni-installer
 	yum remove -y bahmni-installer
-	wget https://bahmni-repo.twhosted.com/rpm/bahmni/$BAHMNI_RPM -P /tmp
+	wget $BAHMNI_REPO_URL/$BAHMNI_RPM -P /tmp
 	yum install -y -q /tmp/$BAHMNI_RPM
 	rm -fR /tmp/$BAHMNI_RPM
 }
@@ -93,6 +93,7 @@ installSetupYaml() {
 	outputToSetupYaml ""
 	outputIfSetToSetupYaml "implementation_name" "$IMPLEMENTATION_NAME"
 	outputIfSetToSetupYaml "bahmni_ntp_timezone" "$BAHMNI_NTP_TIMEZONE"
+	outputIfSetToSetupYaml "bahmni_repo_url" "$BAHMNI_REPO_URL"
 	outputIfSetToSetupYaml "bahmni_installer_directory" "$BAHMNI_INSTALLER_DIRECTORY"
 	outputIfSetToSetupYaml "bahmni_deployment_artifacts" "$BAHMNI_DEPLOYMENT_ARTIFACTS"
 	outputIfSetToSetupYaml "mysql_root_password" "$MYSQL_ROOT_PASSWORD"
