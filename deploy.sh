@@ -141,7 +141,7 @@ installImplementationConfig() {
 	# Option 3: Copy from another folder on the filesystem (mostly used in development mode to copy from mounted vagrant folder)
 	elif ! [ -z "$IMPLEMENTATION_CONFIG_DIR" ]; then
 		echo "Installing Implementation Config by copying from: $IMPLEMENTATION_CONFIG_DIR"
-		cp -a $IMPLEMENTATION_CONFIG_DIR .
+		cp -rf $IMPLEMENTATION_CONFIG_DIR $IMPLEMENTATION_NAME_config
 	fi
 }
 
