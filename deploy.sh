@@ -126,8 +126,10 @@ installImplementationConfig() {
 		echo "Installing Implementation Config from git: $IMPLEMENTATION_CONFIG_REPOSITORY"
 		git clone $IMPLEMENTATION_CONFIG_REPOSITORY $IMPLEMENTATION_NAME_config
 		if ! [ -z "$IMPLEMENTATION_CONFIG_REPOSITORY_VERSION" ]; then
+			cd $IMPLEMENTATION_NAME_config
 			echo "Checking out version: $IMPLEMENTATION_CONFIG_REPOSITORY_VERSION"
 			git checkout $IMPLEMENTATION_CONFIG_REPOSITORY_VERSION
+			cd ..
 		fi
 
 	# Option 2: Download as a zip file from remote URL (resource must be named {{ implementation_name }}_config.zip)
