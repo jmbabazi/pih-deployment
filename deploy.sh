@@ -114,7 +114,7 @@ updateBahmniConfiguration() {
 
 installStarterDatabase() {
 	echo "Installing started database from URL: $INITIAL_DATABASE_URL"
-	wget $INITIAL_DATABASE_URL -P $BAHMNI_DEPLOYMENT_ARTIFACTS -O mysql_dump.sql
+	wget $INITIAL_DATABASE_URL -O $BAHMNI_DEPLOYMENT_ARTIFACTS/mysql_dump.sql
 }
 
 installImplementationConfig() {
