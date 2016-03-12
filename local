@@ -1,0 +1,4 @@
+# This inventory file should be used when deploying to localhost
+# ansible-playbook -i local playbook.yml
+
+localhost ansible_connection=local

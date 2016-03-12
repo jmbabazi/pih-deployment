@@ -1,0 +1,6 @@
+# Install Bahmni
+
+- include: add-installer.yml
+- include: add-starter-database.yml
+- include: add-implementation-config.yml
+- include: install-bahmni.yml

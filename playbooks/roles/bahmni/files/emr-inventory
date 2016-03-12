@@ -1,28 +1,27 @@
 localhost ansible_connection=local
 
-[bahmni-emr-db-slave]
+[bahmni-emr]
+localhost
 
 [bahmni-emr-db]
 localhost
 
-[bahmni-emr]
-localhost
+[bahmni-emr-db-slave]
 
-[bahmni-erp-db]
-
-
-[bahmni-erp-db-slave]
-
-[bahmni-erp]
-
+[bahmni-lab]
 
 [bahmni-lab-db]
 
 [bahmni-lab-db-slave]
 
-[bahmni-lab]
+[bahmni-erp]
+
+[bahmni-erp-db]
+
+[bahmni-erp-db-slave]
 
 [bahmni-reports]
+localhost
 
 [bahmni-pacs]
 

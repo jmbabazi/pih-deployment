@@ -1,0 +1,15 @@
+
+# Add the necessary inventory and setup.yml files needed by the bahmni installer
+
+- name: Add setup.yml
+  template: src=setup.yml.j2 dest={{ bahmni_installer_directory }}/setup.yml
+
+- name: Add inventory file
+  copy: src={{ bahmni_inventory_file }} dest={{ bahmni_installer_directory }}/inventory
+
+# Run the bahmni installer from the {{ bahmni_installer_directory }} directory
+
+- name: Run the bahmni installer
+  command: bahmni install inventory
+  args:
+    chdir: "{{ bahmni_installer_directory }}"

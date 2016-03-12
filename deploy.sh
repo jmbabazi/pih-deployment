@@ -1,8 +1,6 @@
 #!/bin/bash
 
 BIN_PATH="$PWD"
-IMPLEMENTATION_NAME="$1"
-ENV_TYPE=${2:test}
 
 # TODO: Validate input arguments and/or prompt the user to enter them interactively
 
@@ -22,38 +20,13 @@ install_ansible(){
 	fi
 }
 
-install_bahmni_installer(){
-	rm -rf /etc/bahmni-installer
-	yum remove -y bahmni-installer
-	ansible-playbook playbooks/bahmni-installer.yml --extra-vars "implementation_name=$IMPLEMENTATION_NAME"
+install_translations() {
+	ansible-playbook playbooks/deploy-translations.yml
 }
 
-pre_install_config(){
-	echo "Downloading the implementation config"
-	ansible-playbook playbooks/implementation-config.yml --extra-vars "implementation_name=$IMPLEMENTATION_NAME"  --tags "pre-install"
+install_wellbody() {
+	ansible-playbook -i local playbooks/endtb.yml --extra-vars ""
 }
 
-post_install_config(){
-	echo "Downloading the implementation config"
-	bahmni stop
-	ansible-playbook playbooks/implementation-config.yml --extra-vars "implementation_name=$IMPLEMENTATION_NAME"  --tags "post-install"
-	bahmni start
-}
-
-deploy(){
-	cp -f $BIN_PATH/group_vars/$IMPLEMENTATION_NAME-config.yml /etc/bahmni-installer/setup.yml
-	cp -f $BIN_PATH/group_vars/$IMPLEMENTATION_NAME-inventory /etc/bahmni-installer/inventory
-	cd /etc/bahmni-installer && bahmni install inventory
-	cd "$BIN_PATH"
-}
-
-install_conditional_packages(){	
-	ansible-playbook playbooks/$ENV_TYPE.yml --extra-vars "env_name=$ENV_TYPE"
-}
-
-echo "Deploying a new $ENV_TYPE environment for $IMPLEMENTATION_NAME"
 install_ansible
-install_bahmni_installer
-pre_install_config
-deploy
-post_install_config
+install_wellbody

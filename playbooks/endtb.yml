@@ -1,0 +1,13 @@
+# This playbook serves to setup a server for endtb
+
+- hosts: all
+  gather_facts: false
+  roles:
+    - bahmni
+  vars:
+    implementation_name: "endtb"
+    bahmni_ntp_timezone: "America/New_York"
+    initial_database_url: "https://bahmni-repo.twhosted.com/endtb/release-1.0/mysql_dump.sql"
+    implementation_config_zip_url: "https://bahmni-repo.twhosted.com/endtb/release-1.0/endtb_config.zip"
+    translations_repo_url: "https://github.com/PIH/endtb-config.git"
+    translations_repo_name: "endtb-config"

@@ -1,0 +1,23 @@
+# Add implementation configuration
+
+# Option 1: Clone from github (must specify both repository and version)
+
+- name: clone implementation config from github
+  git: repo={{ implementation_config_repository }} version={{ implementation_config_repository_version }} dest={{ bahmni_deployment_artifacts }}/{{ implementation_name }}_config
+  when: implementation_config_repository is defined
+
+# Option 2: Download as a zip file from remote URL (resource must be named {{ implementation_name }}_config.zip)
+
+- name: Download implementation config from remote location as zip file
+  get_url: url={{ implementation_config_zip_url }} dest={{ bahmni_deployment_artifacts }}
+  when: implementation_config_zip_url is defined
+
+- name: Extract implementation config zip file into deployment artifacts directory
+  unarchive: src={{ bahmni_deployment_artifacts }}/{{ implementation_name }}_config.zip dest={{ bahmni_deployment_artifacts }} copy=no
+  when: implementation_config_zip_url is defined
+
+# Option 3:  When developing, it is useful to be able to copy the implementation config from another folder
+
+- name: Copy implementation config from a source directory into the deployment artifacts directory
+  copy: src={{ implementation_config_dir }} dest={{ bahmni_deployment_artifacts }}/{{ implementation_name }}_config mode=755 owner=bahmni group=bahmni
+  when: implementation_config_dir is defined

@@ -1,0 +1,12 @@
+# This playbook serves to setup a server for endtb
+
+- hosts: all
+  gather_facts: false
+  roles:
+    - bahmni
+  vars:
+    implementation_name: "wellbody"
+    bahmni_ntp_timezone: "Africa/Freetown"
+    initial_database_url: "https://raw.githubusercontent.com/Bahmni/bahmni-package/master/openmrs/resources/openmrs_clean_dump.sql"
+    implementation_config_repository: "https://github.com/PIH/wellbody-config.git"
+    implementation_config_repository_version: "master"

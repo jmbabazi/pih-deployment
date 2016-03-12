@@ -1,0 +1,7 @@
+# Remove any existing bahmni-installer package
+
+- name: Remove the existing bahmni-installer rpm
+  yum: name="bahmni-installer" state=absent
+
+- name: Remove the existing bahmni-installer directory
+  command: rm -rf /etc/bahmni-installer

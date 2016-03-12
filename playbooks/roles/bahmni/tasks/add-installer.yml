@@ -1,0 +1,12 @@
+# Ensure that the specified version of the bahmni installer package is installed
+
+- name: Check the version of any existing bahmni-installer rpm
+  command: yum list installed bahmni-installer
+  register: existing_bahmni_installer_version
+  ignore_errors: true
+
+- include: remove-installer.yml
+  when: existing_bahmni_installer_version.stdout.find("{{ bahmni_version }}") == -1
+
+- name: Install bahmni-installer version {{ bahmni_emr_version }}
+  yum: name="{{ bahmni_repo_url }}/{{ bahmni_installer }}" state=present

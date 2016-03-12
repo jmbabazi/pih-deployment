@@ -1,0 +1,5 @@
+# Add starter database to appropriate location for Bahmni installer
+
+- name: Copy starter database at {{ initial_database_url }} to {{ bahmni_deployment_artifacts }}
+  get_url: url="{{ initial_database_url }}" dest=/etc/bahmni-installer/deployment-artifacts/mysql_dump.sql
+  when: initial_database_url is defined

@@ -1,0 +1,14 @@
+- name: install required packages
+  yum: pkg={{ item }} state=present
+  with_items:
+      - unzip
+      - tar
+      - wget
+      - curl
+      - git
+      - libselinux-python
+
+- name: set selinux state and policy
+  selinux:
+    policy=targeted
+    state=permissive

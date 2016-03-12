@@ -1,0 +1,19 @@
+# Default Group Variables for "bahmni" role
+# These have the lowest precedence, and should be overridden as needed
+# See http://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable
+# For the purposes of documenting all supported variables for this role, all are included, whether set or not
+
+# Expected to be overridden
+
+implementation_name: ""
+bahmni_ntp_timezone: "America/New_York"
+bahmni_version: "0.80-139"
+openmrs_server_options: "-Xms1024m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=1024m"
+bahmni_inventory_file: "emr-inventory"
+
+# Not expected to be overridden
+
+bahmni_repo_url: "https://bahmni-repo.twhosted.com/rpm/bahmni/"
+bahmni_installer_directory: "/etc/bahmni-installer"
+bahmni_deployment_artifacts: "{{ bahmni_installer_directory }}/deployment-artifacts"
+bahmni_installer: "bahmni-installer-{{ bahmni_version }}.noarch.rpm"
