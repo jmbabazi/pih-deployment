@@ -2,12 +2,30 @@
 - hosts: 127.0.0.1
   connection: local
   sudo: yes
+  
   vars_files:
     - ../group_vars/{{ implementation_name }}-config.yml
+    - ../group_vars/endtb-config.yml
+    - ../deploy-production/group_vars/production
+   
+  vars_prompt:
+    - name: "scp_username"
+      prompt: "enter username"
+      private: no
+      tags: [post-install, production, ssl, newrelic, create_users, delete_users]
+      
+    - name: "scp_url"
+      prompt: "enter scp url"
+      private: no
+      tags: [post-install, production, ssl, newrelic, create_users, delete_users]
+ 
   tasks:
-
-  # PRE-INSTALLATION ACTIVITIES
-
+  - name: Enter ssh password
+    shell: scp -r {{scp_username}}@{{scp_url}}:{{production_folder}} ../.
+    tags: [post-install, production, ssl, newrelic, create_users, delete_users]
+  
+# PRE-INSTALLATION ACTIVITIES
+  
   - name: install required packages
     yum: pkg={{ item }} state=installed
     with_items:
@@ -16,6 +34,8 @@
         - wget
         - curl
         - git
+        - vim
+        - sshpass
     tags: [pre-install]
 
     # Specify where to get the initial database SQL
@@ -60,3 +80,146 @@
 
   - debug: msg="Post-installation of {{ implementation_name }}"
     tags: [post-install]
+
+# Additional packages for a production environment
+  - name: install required packages
+    yum: pkg={{ item }} state=installed
+    with_items:
+        - lsb # for hamachi
+        - jq # jason quesry
+        - p7zip
+        - mutt
+        - emacs
+        - nano
+        - gzip
+        - unzip
+    tags: [post-install, production, packages]
+
+# Disable repos to avoid unecessary bahmni packages updates
+  - name: Creates directory to backup original files for centOS repo
+    file: path={{repo_backup_folder}} state=directory  
+    tags: [post-install, production, backup-repo]
+
+  - name: backup epel.repo
+    command: mv {{epel_repo}} {{repo_backup_folder}}
+    tags: [post-install, production, backup-repo]
+
+  - name: Enable selective updates to the epel repo 
+    template: src={{file_folder}}/epel.repo dest={{yum_repo}} owner=root mode=0644
+    tags: [post-install, production, backup-repo]    
+
+  - name: backup the original bahmni repo
+    command: mv {{bahmni_repo}} {{repo_backup_folder}}
+    tags: [post-install, production, backup-repo]
+
+  - name: Disable updates to bahmni repo
+    template: src={{file_folder}}/bahmni.repo dest={{yum_repo}} owner=root mode=0644
+    tags: [post-install, production, backup-repo]  
+
+  - name: backup the original mysql backup
+    command: mv {{mysql_repo}} {{repo_backup_folder}}
+    tags: [post-install, production, backup-repo]
+
+  - name: Disable update to mysql repos
+    template: src={{file_folder}}/mysql.repo  dest={{yum_repo}} owner=root mode=0644
+    tags: [post-install, production, backup-repo]
+
+  - name: backup yum.conf from /etc
+    command: mv {{rpm_conf_file}} {{repo_backup_folder}}
+    tags: [post-install, production, backup-repo]
+
+  - name: Add line in /etc/yum.conf to disable updates of the bahmni installer and all bahmni related packages
+    template: src={{template_folder}}/yum.conf.j2 dest={{rpm_conf_file}} owner=root mode=0644
+    tags: [post-install, production, backup-repo]
+
+# Hamachi
+  - name: install hamachi
+    yum: name={{hamachi_rpm_url}} state=present
+    tags: [post-install, production, hamachi]
+    
+  - name: Start Hamachi
+    service: name=logmein-hamachi state=started
+    tags: [post-install, production, hamachi]
+
+# SSL
+  - name: Check if httpd service exists
+    stat: path=/etc/init.d/{{service_name_http}}
+    register: service_status
+    tags: [post-install, production, ssl]
+
+  - name: Stop httpd service if exists
+    service: name={{service_name_http}} state=stopped
+    when: service_status.stat.exists
+    tags: [post-install, production, ssl]
+
+  - name: copy ssl conf file
+    template:
+      src=../files/ssl.conf.j2
+      dest=/etc/httpd/conf.d/ssl.conf
+      mode=644
+      owner={{ bahmni_user }}
+      group={{ bahmni_group }}
+    tags: [post-install, production, ssl]
+
+  #- name: Extract the certs
+  #  shell: gunzip {{file_folder}}/ssl-certs.tar.gz
+
+  - name: Extract tar
+    unarchive: src={{file_folder}}/ssl-certs.tar dest=/etc/ssl
+    tags: [post-install, production, ssl]
+
+  - name: Start httpd
+    service: name={{service_name_http}} state=started enabled=yes
+    tags: [post-install, production, ssl]
+
+# Newrelic
+  - name: Installing newrelic rpm package
+    yum: name={{new_relic_package_url}} state=present
+    tags: [post-install, production, newrelic]
+
+  - name: Installing newrelic agent
+    yum: pkg={{ item }} state=installed
+    with_items:
+        - newrelic-sysmond
+    tags: [post-install, production, newrelic]
+
+# Users 
+  - name: Creating groups
+    group: name="{{item}}"
+    with_items: groups_to_create
+    tags: ['post-install', 'production','groups','configuration']
+
+  - name: Creating Users
+    user: name="{{item.username}}" state=present
+        group="{{item.group if groups_to_create else default_users_group}}"
+        groups="{{item.groups | join(',') if groups_per_user else default_users_group}}"
+        shell="{{item.shell if shell is defined else users_default_shell}}"
+        password="{{item.password}}"
+        comment="{{item.name}}"
+        createhome={{'no' if users_homedirs else 'yes'}}
+    with_items: "{{users}}"
+    tags: ['post-install', 'production', 'create_users','configuration']
+
+  - name: Force users to change password on login
+    shell: chage -d 0 {{ item.username }}
+    with_items: "{{users}}"
+    tags: ['post-install', 'production', 'password_change', 'create_users']
+
+  - name: Allow users to run sudo command
+    lineinfile: "dest=/etc/sudoers                                                
+              state=present       
+              line='%wheel        ALL=(ALL)       ALL'
+              validate='/usr/sbin/visudo -cf %s'"
+    tags: ['post-install', 'production', 'password_change', 'create_users']
+
+  - name: Delete users
+    user: name={{item.username}} state=absent remove=yes
+    with_items: users_deleted
+    tags: ['post-install', 'production', 'delete_users', 'configuration']
+
+  - name: Delete user created group
+    group: name="{{item.username}}" state=absent
+    with_items: users_deleted
+    tags: ['post-install', 'production', 'delete_users','delete_groups','configuration']
+
+
