@@ -7,25 +7,29 @@
     - ../group_vars/{{ implementation_name }}-config.yml
     - ../group_vars/endtb-config.yml
     - ../deploy-production/group_vars/production
+  
    
   vars_prompt:
-    - name: "scp_username"
-      prompt: "enter username"
-      private: no
-      tags: [post-install, production, ssl, newrelic, create_users, delete_users]
+  - name: "scp_username"
+    prompt: "enter username"
+    private: no
+    tags: [post-install, production, ssl, newrelic, create_users, delete_users]
       
-    - name: "scp_url"
-      prompt: "enter scp url"
-      private: no
-      tags: [post-install, production, ssl, newrelic, create_users, delete_users]
+  - name: "scp_url"
+    prompt: "enter scp url"
+    private: no
+    tags: [post-install, production, ssl, newrelic, create_users, delete_users]
  
-  tasks:
+ 
   - name: Enter ssh password
     shell: scp -r {{scp_username}}@{{scp_url}}:{{production_folder}} ../.
     tags: [post-install, production, ssl, newrelic, create_users, delete_users]
   
+  tasks:
 # PRE-INSTALLATION ACTIVITIES
-  
+  - debug: msg="Pre-installation of {{ implementation_name }}"
+    tags: [pre-install]
+
   - name: install required packages
     yum: pkg={{ item }} state=installed
     with_items:
@@ -220,6 +224,22 @@
   - name: Delete user created group
     group: name="{{item.username}}" state=absent
     with_items: users_deleted
-    tags: ['post-install', 'production', 'delete_users','delete_groups','configuration']
+    tags: ['post-install', 'production', 'delete_users','delete_groups', 'configuration']
 
+#Cron Jobs 
+  - name: Create backup directories
+    file: path="/home/{{item.0}}/{{item.1}}"  state="directory" owner="root"
+    with_nested:
+        - ['backups']
+        - ['to_backup', 'current', 'sequences'] 
+    tags: ['post-install', 'production', 'cronjobs', 'mysql_backup']
+ 
+  - name: Copy DB backup script to /usr/local/bin
+    copy: src=../deploy-production/files/dbBackup.sh dest=/usr/local/bin/
+    tags: ['post-install', 'production', 'cronjobs', 'mysql_backup']
 
+  - name: Creates daily mysql backup cronjob
+    cron: minute="{{dbCronMin}}" hour="{{dbCronHr}}" weekday=0-6
+           name="Backup mysql database (daily schedule)" user="root"
+           job="/usr/local/bin/dbBackup.sh"
+    tags: ['post-install', 'production', 'cronjobs', 'mysql_backup'] 
