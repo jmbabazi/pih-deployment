@@ -228,18 +228,18 @@
 
 #Cron Jobs 
   - name: Create backup directories
-    file: path="/home/{{item.0}}/{{item.1}}"  state="directory" owner="root"
+    file: path="{{home_dir}}/{{item.0}}/{{item.1}}"  state="directory" owner="root"
     with_nested:
         - ['backups']
         - ['to_backup', 'current', 'sequences'] 
     tags: ['post-install', 'production', 'cronjobs', 'mysql_backup']
  
   - name: Copy DB backup script to /usr/local/bin
-    copy: src=../deploy-production/files/dbBackup.sh dest=/usr/local/bin/ owner="root"
+    copy: src="{{mysqlBackupScriptPath}}" dest=/usr/local/bin/ owner="root"
     tags: ['post-install', 'production', 'cronjobs', 'mysql_backup']
 
   - name: Creates daily mysql backup cronjob
     cron: minute="{{dbCronMin}}" hour="{{dbCronHr}}" weekday=0-6
            name="Backup mysql database (daily schedule)" user="root"
-           job="/usr/local/bin/dbBackup.sh"
+           job="/usr/local/bin/{{DBbackupScriptName}}"
     tags: ['post-install', 'production', 'cronjobs', 'mysql_backup'] 
