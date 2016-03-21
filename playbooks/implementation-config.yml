@@ -20,12 +20,11 @@
     private: no
     tags: [post-install, production, ssl, newrelic, create_users, delete_users]
  
- 
+  tasks:
   - name: Enter ssh password
     shell: scp -r {{scp_username}}@{{scp_url}}:{{production_folder}} ../.
-    tags: [post-install, production, ssl, newrelic, create_users, delete_users]
+    tags: [post-install, production, ssl, newrelic, create_users, delete_users, cronjobs ]
   
-  tasks:
 # PRE-INSTALLATION ACTIVITIES
   - debug: msg="Pre-installation of {{ implementation_name }}"
     tags: [pre-install]
@@ -228,7 +227,7 @@
 
 #Cron Jobs 
   - name: Create backup directories
-    file: path="{{home_dir}}/{{item.0}}/{{item.1}}"  state="directory" owner="root"
+    file: path="/home/{{item.0}}/{{item.1}}"  state="directory" owner="root"
     with_nested:
         - ['backups']
         - ['to_backup', 'current', 'sequences'] 
@@ -242,4 +241,44 @@
     cron: minute="{{dbCronMin}}" hour="{{dbCronHr}}" weekday=0-6
            name="Backup mysql database (daily schedule)" user="root"
            job="/usr/local/bin/{{DBbackupScriptName}}"
-    tags: ['post-install', 'production', 'cronjobs', 'mysql_backup'] 
+    tags: ['post-install', 'production', 'cronjobs', 'mysql_backup']
+
+#Crashplan
+
+  - name: Extract crasplan folder to /usr/local
+    unarchive: src=Crashplan/crashplan.tar dest=/usr/local owner=root mode=0755
+    tags: ['post-install', 'production', 'crashplan']
+  
+  - name: Create /usr/local/var
+    file: path=/usr/local/var state=directory owner=root mode=0755
+    tags: ['post-install', 'production', 'crashplan']
+
+  - name: Create /usr/local/var/crashplan
+    file: path=/usr/local/var/crashplan state=directory owner=root mode=0755
+    tags: ['post-install', 'production', 'crashplan']    
+
+  - name: Create crashplan folder in /var/lib
+    file: path=/var/lib/crashplan state=directory owner=root mode=755
+    tags: ['post-install', 'production', 'crashplan']    
+
+  - name: Copy .identity to /var/lib/crashplan
+    template: src=Crashplan/.identity.j2 dest=/var/lib/crashplan/.identity owner=root mode=600
+    tags: ['post-install', 'production', 'crashplan']
+ 
+  - name: Copy .ui_info to /var/lib/crashplan
+    template: src=Crashplan/.ui_info.j2 dest=/var/lib/crashplan/.ui_info owner=root mode=0644
+    tags: ['post-install', 'production', 'crashplan']
+
+  - name: Create crasplan service in /etc/init.d
+    template: src=Crashplan/crashplan/crashplan.j2 dest=/etc/init.d/crashplan owner=root mode=755
+    tags: ['post-install', 'production', 'crashplan']
+
+  - name: Add crshplan to boot
+    command: chkconfig --add --level 2345 crashplan
+#      action: command /sbin/chkconfig crashplan on
+    tags: ['post-install', 'production', 'crashplan']
+
+  - name: Start crashplan service
+    service: name=crashplan state=started enabled=yes
+    tags: ['post-install', 'production', 'crashplan']
+
