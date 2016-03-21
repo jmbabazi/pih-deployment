@@ -235,7 +235,7 @@
     tags: ['post-install', 'production', 'cronjobs', 'mysql_backup']
  
   - name: Copy DB backup script to /usr/local/bin
-    copy: src=../deploy-production/files/dbBackup.sh dest=/usr/local/bin/
+    copy: src=../deploy-production/files/dbBackup.sh dest=/usr/local/bin/ owner="root"
     tags: ['post-install', 'production', 'cronjobs', 'mysql_backup']
 
   - name: Creates daily mysql backup cronjob
