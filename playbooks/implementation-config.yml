@@ -246,39 +246,38 @@
 #Crashplan
 
   - name: Extract crasplan folder to /usr/local
-    unarchive: src=Crashplan/crashplan.tar dest=/usr/local owner=root mode=0755
+    unarchive: src=../deploy-production/files/Crashplan/crashplan.tar dest=/usr/local owner=root mode=0755
     tags: ['post-install', 'production', 'crashplan']
   
   - name: Create /usr/local/var
-    file: path=/usr/local/var state=directory owner=root mode=0755
+    file: path={{crashplanFolder0}} state=directory owner=root mode=0755
     tags: ['post-install', 'production', 'crashplan']
 
   - name: Create /usr/local/var/crashplan
-    file: path=/usr/local/var/crashplan state=directory owner=root mode=0755
+    file: path={{crashplanFolder2}} state=directory owner=root mode=0755
     tags: ['post-install', 'production', 'crashplan']    
 
   - name: Create crashplan folder in /var/lib
-    file: path=/var/lib/crashplan state=directory owner=root mode=755
+    file: path={{crashplanFolder1}} state=directory owner=root mode=755
     tags: ['post-install', 'production', 'crashplan']    
 
   - name: Copy .identity to /var/lib/crashplan
-    template: src=Crashplan/.identity.j2 dest=/var/lib/crashplan/.identity owner=root mode=600
+    template: src={{identity}} dest=/var/lib/crashplan/.identity owner=root mode=600
     tags: ['post-install', 'production', 'crashplan']
  
   - name: Copy .ui_info to /var/lib/crashplan
-    template: src=Crashplan/.ui_info.j2 dest=/var/lib/crashplan/.ui_info owner=root mode=0644
+    template: src={{ui_infoPath}} dest=/var/lib/crashplan/.ui_info owner=root mode=0644
     tags: ['post-install', 'production', 'crashplan']
 
-  - name: Create crasplan service in /etc/init.d
-    template: src=Crashplan/crashplan/crashplan.j2 dest=/etc/init.d/crashplan owner=root mode=755
+  - name: Create crashplan service in /etc/init.d
+    copy: src=../deploy-production/files/Crashplan/crashplan/crashplan dest=/etc/init.d/crashplan owner=root mode=755
     tags: ['post-install', 'production', 'crashplan']
 
-  - name: Add crshplan to boot
+  - name: Add crashplan to boot
     command: chkconfig --add --level 2345 crashplan
-#      action: command /sbin/chkconfig crashplan on
+#   action: command /sbin/chkconfig crashplan on
     tags: ['post-install', 'production', 'crashplan']
 
   - name: Start crashplan service
     service: name=crashplan state=started enabled=yes
     tags: ['post-install', 'production', 'crashplan']
-
