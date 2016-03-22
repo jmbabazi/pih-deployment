@@ -23,6 +23,7 @@ localhost
 [bahmni-lab]
 
 [bahmni-reports]
+localhost
 
 [bahmni-pacs]
 
