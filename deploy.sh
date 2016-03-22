@@ -46,14 +46,18 @@ deploy(){
 	cd /etc/bahmni-installer && bahmni install inventory
 	cd "$BIN_PATH"
 }
-
-install_conditional_packages(){	
-	ansible-playbook playbooks/$ENV_TYPE.yml --extra-vars "env_name=$ENV_TYPE"
-}
-
-echo "Deploying a new $ENV_TYPE environment for $IMPLEMENTATION_NAME"
-install_ansible
-install_bahmni_installer
-pre_install_config
-deploy
-post_install_config
+if [[ "$ENV_TYPE" == "test" ]];
+then
+        echo "Deploying a new $ENV_TYPE environment for $IMPLEMENTATION_NAME"
+        install_ansible
+        install_bahmni_installer
+        pre_install_config
+        deploy
+else
+        echo "Deploying a new $ENV_TYPE environment for $IMPLEMENTATION_NAME"
+	install_ansible
+	install_bahmni_installer
+	pre_install_config
+	deploy
+	post_install_config
+fi
